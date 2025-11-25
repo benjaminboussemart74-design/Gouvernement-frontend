@@ -125,6 +125,20 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
+  grid-auto-flow: dense;
+  grid-auto-rows: minmax(340px, auto);
+}
+
+.card.president {
+  grid-area: president;
+}
+
+.card.premier-ministre {
+  grid-area: premier-ministre;
+}
+
+.card:not(.president):not(.premier-ministre) {
+  grid-row-start: auto;
 }
 
 .card {
@@ -335,5 +349,27 @@ main {
   .sheet header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    grid-template-areas:
+      "president premier-ministre";
+  }
+
+  .card.president {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .card.premier-ministre {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .card:not(.president):not(.premier-ministre) {
+    grid-row-start: 2;
   }
 }
