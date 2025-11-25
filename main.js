@@ -106,7 +106,18 @@ export function renderGrid(members) {
   gridContainer.innerHTML = "";
 
   const { president, primeMinister, others } = members;
-  [president, primeMinister, ...others].forEach((member) => {
+
+  if (president) {
+    gridContainer.appendChild(renderMemberCard(president, ["president"]));
+  }
+
+  if (primeMinister) {
+    gridContainer.appendChild(
+      renderMemberCard(primeMinister, ["premier-ministre"])
+    );
+  }
+
+  others.forEach((member) => {
     if (!member) return;
     const card = renderMemberCard(member);
     gridContainer.appendChild(card);
@@ -114,9 +125,9 @@ export function renderGrid(members) {
 }
 
 // Fonction : crée une carte de membre avec photo, nom et bouton d'action.
-export function renderMemberCard(member) {
+export function renderMemberCard(member, extraClasses = []) {
   const card = document.createElement("article");
-  card.className = "card";
+  card.className = ["card", ...extraClasses].join(" ");
   card.innerHTML = `
     <span class="role-tag">${member.role || "Rôle"}</span>
     <img src="${getPhoto(member.photo_url)}" alt="Portrait de ${member.full_name}">
