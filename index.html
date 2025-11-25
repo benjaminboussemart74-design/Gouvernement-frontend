@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gouvernement français</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-wrapper">
+      <img src="https://via.placeholder.com/180x80?text=Logo+principal" alt="Logo principal du gouvernement" class="logo-main">
+      <img src="https://via.placeholder.com/120x40?text=Logo+secondaire" alt="Logo secondaire" class="logo-secondary">
+    </div>
+    <div class="header-text">
+      <h1>Gouvernement de la République française</h1>
+      <p>Découvrez la composition complète du gouvernement, son président, son premier ministre et l'ensemble des ministres.</p>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div class="intro-header">
+      <h2>Présentation rapide</h2>
+      <button id="toggle-intro" aria-expanded="true" aria-controls="intro-content">Fermer</button>
+    </div>
+    <p id="intro-content" class="intro-content">
+      Cette page rassemble automatiquement les informations depuis Supabase : fiches, biographies, cabinets et pôles sont générés en direct. Utilisez les cartes ci-dessous pour consulter le détail de chaque membre.
+    </p>
+  </section>
+
+  <main>
+    <section id="members-grid" class="grid" aria-live="polite">
+      <!-- La grille des membres sera injectée par JavaScript -->
+    </section>
+  </main>
+
+  <aside id="sheet-panel" class="sheet hidden" aria-live="assertive" aria-label="Fiche détaillée du membre">
+    <!-- La fiche détaillée est rendue dynamiquement -->
+  </aside>
+
+  <template id="loader-template">
+    <div class="loader" role="status" aria-label="Chargement">Chargement…</div>
+  </template>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
