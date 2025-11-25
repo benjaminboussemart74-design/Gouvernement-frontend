@@ -234,12 +234,15 @@ function renderPoles(poles = []) {
   const list = poles
     .map((pole) => {
       const members = pole.subordinates
-        ?.map((m) => `<li>${m.full_name} <span class="meta">${m.cabinet_role || m.role || "Membre"}</span></li>`)
+        ?.map(
+          (m) =>
+            `<li>${m.full_name} <span class="meta">${m.cabinet_role || m.collab_grades?.label || m.role || "Membre"}</span></li>`
+        )
         .join("") || "<li>Aucun membre listé.</li>";
       return `
         <article class="pole">
           <h4>${pole.full_name}</h4>
-          <p class="chef">${pole.cabinet_role || "Chef de pôle"}</p>
+          <p class="chef">${pole.cabinet_role || pole.collab_grades?.label || "Chef de pôle"}</p>
           <ul>${members}</ul>
         </article>
       `;
@@ -299,18 +302,37 @@ export async function loadPersonCabinet(personId) {
 
 // Fonction : récupère les pôles (et leurs membres) pour un Président ou Premier ministre.
 export async function loadPersonPoles(personId) {
+  // Les chefs de pôle sont modélisés comme des personnes du cabinet avec un rôle/grade
+  // spécifique (ex. cabinet_role ou grade contenant « pôle »). On filtre donc sur ces
+  // attributs plutôt que sur un rôle métier générique.
   const { data, error } = await supabase
     .from("persons")
     .select(`
       id, full_name, description, photo_url, cabinet_role, role, collab_grade,
-      subordinates:persons!superior_id ( id, full_name, role, cabinet_role, photo_url, description, collab_grade )
+      collab_grades ( label ),
+      subordinates:persons!superior_id (
+        id, full_name, role, cabinet_role, photo_url, description, collab_grade,
+        collab_grades ( label )
+      )
     `)
     .eq("superior_id", personId)
-    .eq("role", "pole")
+    .or("cabinet_role.ilike.%pôle%,collab_grades.label.ilike.%pôle%")
     .order("full_name", { ascending: true });
 
   if (error) throw error;
-  return data || [];
+
+  const isPoleLeader = (person) => {
+    const label = person.collab_grades?.label?.toLowerCase() || "";
+    const role = person.cabinet_role?.toLowerCase() || "";
+    return label.includes("pôle") || role.includes("pôle");
+  };
+
+  return (data || []).map((pole) => ({
+    ...pole,
+    // Retire les éventuels chefs de pôle imbriqués de la liste des membres pour
+    // ne conserver que les collaborateurs du pôle.
+    subordinates: pole.subordinates?.filter((member) => !isPoleLeader(member)) || [],
+  }));
 }
 
 // Fonction : exporte la fiche courante (placeholder simple via impression navigateur).
